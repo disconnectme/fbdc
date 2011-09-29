@@ -25,7 +25,7 @@
 		<dict>
 			<key>Start</key>
 			<array>
-				<string>content.js</string>
+				<string>chrome/content.js</string>
 			</array>
 		</dict>
 	</dict>
