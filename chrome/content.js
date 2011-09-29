@@ -1,21 +1,23 @@
 /*
   A content script that stops Facebook from tracking the webpages you go to.
 
-  Copyright 2010 Brian Kennish
+  Copyright 2010, 2011 Disconnect, Inc.
 
-  Licensed under the Apache License, Version 2.0 (the "License"); you may not
-  use this file except in compliance with the License. You may obtain a copy of
-  the License at
+  This program is free software: you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option) any later
+  version.
 
-    http://www.apache.org/licenses/LICENSE-2.0
+  This program is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-  License for the specific language governing permissions and limitations under
-  the License.
+  You should have received a copy of the GNU General Public License along with
+  this program. If not, see <http://www.gnu.org/licenses/>.
 
-  Brian Kennish <byoogle@gmail.com>
+  Authors (one per line):
+
+    Brian Kennish <byoogle@gmail.com>
 */
 
 /* The domain names Facebook phones home with, lowercased. */
@@ -27,13 +29,12 @@ const DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
 function isMatching(url, domains) {
   const DOMAIN_COUNT = domains.length;
   for (var i = 0; i < DOMAIN_COUNT; i++)
-      if (url.toLowerCase().indexOf(domains[i], 7) >= 7) return true;
-          // A valid URL has seven-plus characters ("http://"), then the domain.
+      if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
+          // A valid URL has at least two characters ("//"), then the domain.
 }
 
 /* Traps and selectively cancels a request. */
-if (!isMatching(location.href, DOMAINS)) {
-  document.addEventListener("beforeload", function(event) {
-    if (isMatching(event.url, DOMAINS)) event.preventDefault();
-  }, true);
-}
+if (!isMatching(location.href, DOMAINS))
+    document.addEventListener('beforeload', function(event) {
+      if (isMatching(event.url, DOMAINS)) event.preventDefault();
+    }, true);
