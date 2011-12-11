@@ -1,8 +1,8 @@
 {
   "name": "Facebook Disconnect",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Stop Facebook from tracking the webpages you go to.",
-  "icons": {"16": "16.png", "48": "48.png", "128": "128.png"},
+  "icons": {"48": "48.png", "128": "128.png"},
   "content_scripts": [{
     "matches": ["http://*/*", "https://*/*"],
     "js": ["content.js"],
