@@ -20,11 +20,11 @@
     Brian Kennish <byoogle@gmail.com>
 */
 
-/* The domain names Facebook phones home with, lowercased. */
-const DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
-
 /* The XPCOM interfaces. */
-const INTERFACES = Components.interfaces;
+const FACEBOOK_INTERFACES = Components.interfaces;
+
+/* The domain names Facebook phones home with, lowercased. */
+const FACEBOOK_DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
 
 /*
   Determines whether any of a bucket of domains is part of a URL, regex free.
@@ -38,20 +38,21 @@ function isMatching(url, domains) {
 
 /* Traps and selectively cancels a request. */
 Components.classes['@mozilla.org/observer-service;1']
-  .getService(INTERFACES.nsIObserverService)
+  .getService(FACEBOOK_INTERFACES.nsIObserverService)
   .addObserver({observe: function(subject) {
     const NOTIFICATION_CALLBACKS =
-        subject.QueryInterface(INTERFACES.nsIHttpChannel).notificationCallbacks
-            || subject.loadGroup.notificationCallbacks;
+        subject.QueryInterface(
+          FACEBOOK_INTERFACES.nsIHttpChannel
+        ).notificationCallbacks || subject.loadGroup.notificationCallbacks;
     const BROWSER =
         NOTIFICATION_CALLBACKS &&
             gBrowser.getBrowserForDocument(
               NOTIFICATION_CALLBACKS
-                .getInterface(INTERFACES.nsIDOMWindow).top.document
+                .getInterface(FACEBOOK_INTERFACES.nsIDOMWindow).top.document
             );
     subject.referrer.ref;
         // HACK: The URL read otherwise outraces the window unload.
-    BROWSER && !isMatching(BROWSER.currentURI.spec, DOMAINS) &&
-        isMatching(subject.URI.spec, DOMAINS) &&
+    BROWSER && !isMatching(BROWSER.currentURI.spec, FACEBOOK_DOMAINS) &&
+        isMatching(subject.URI.spec, FACEBOOK_DOMAINS) &&
             subject.cancel(Components.results.NS_ERROR_ABORT);
   }}, 'http-on-modify-request', false);
