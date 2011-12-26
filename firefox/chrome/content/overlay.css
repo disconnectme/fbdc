@@ -1,0 +1,16 @@
+/* CSS Document */
+#fbdc-toolbarbutton{
+border:1px solid #CCCCCC;
+background-color:#FFFFFF;
+}
+
+#fbdc-toolbarbutton:hover{
+border:1px solid #CCCCCC;
+background-color:#99FFFF;
+}
+
+#statusFacebookBarPanelMenu{
+background-color:#FFFFFF;
+border:1px solid #CCCCCC;
+padding:5px;
+}

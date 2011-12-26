@@ -20,18 +20,21 @@
     Brian Kennish <byoogle@gmail.com>
 */
 
-/* The XPCOM interfaces. */
-const FACEBOOK_INTERFACES = Components.interfaces;
+/* The inclusion of the jQuery library*/
+$fbdc_mb = jQuery.noConflict();
 
 /* The domain names Facebook phones home with, lowercased. */
 const FACEBOOK_DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
 
+/* The XPCOM interfaces. */
+const FACEBOOK_INTERFACES = Components.interfaces;
+
 /*
   Determines whether any of a bucket of domains is part of a URL, regex free.
 */
-function isMatching(url, domains) {
-  const DOMAIN_COUNT = domains.length;
-  for (var i = 0; i < DOMAIN_COUNT; i++)
+function isFacebookMatching(url, domains) {
+  const FACEBOOK_DOMAIN_COUNT = domains.length;
+  for (var i = 0; i < FACEBOOK_DOMAIN_COUNT; i++)
       if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
           // A valid URL has at least two characters ("//"), then the domain.
 }
@@ -40,19 +43,30 @@ function isMatching(url, domains) {
 Components.classes['@mozilla.org/observer-service;1']
   .getService(FACEBOOK_INTERFACES.nsIObserverService)
   .addObserver({observe: function(subject) {
-    const NOTIFICATION_CALLBACKS =
-        subject.QueryInterface(
-          FACEBOOK_INTERFACES.nsIHttpChannel
-        ).notificationCallbacks || subject.loadGroup.notificationCallbacks;
-    const BROWSER =
-        NOTIFICATION_CALLBACKS &&
+    const FACEBOOK_NOTIFICATION_CALLBACKS =
+        subject.QueryInterface(FACEBOOK_INTERFACES.nsIHttpChannel).notificationCallbacks
+            || subject.loadGroup.notificationCallbacks;
+    const FACEBOOK_BROWSER =
+        FACEBOOK_NOTIFICATION_CALLBACKS &&
             gBrowser.getBrowserForDocument(
-              NOTIFICATION_CALLBACKS
+              FACEBOOK_NOTIFICATION_CALLBACKS
                 .getInterface(FACEBOOK_INTERFACES.nsIDOMWindow).top.document
             );
     subject.referrer.ref;
         // HACK: The URL read otherwise outraces the window unload.
-    BROWSER && !isMatching(BROWSER.currentURI.spec, FACEBOOK_DOMAINS) &&
-        isMatching(subject.URI.spec, FACEBOOK_DOMAINS) &&
+    FACEBOOK_BROWSER && !isFacebookMatching(FACEBOOK_BROWSER.currentURI.spec, FACEBOOK_DOMAINS) &&
+        isFacebookMatching(subject.URI.spec, FACEBOOK_DOMAINS) &&
             subject.cancel(Components.results.NS_ERROR_ABORT);
   }}, 'http-on-modify-request', false);
+
+/* Lifts international trade embargo on Facebook */
+function fbdcUnblock(){
+	alert("I am unblocking facebook");
+
+}
+
+/* Enforce international trade embargo on Facebook */
+function fbdcBlock(){
+	alert("I am blocking facebook");
+	$fbdc_mb("#FacebookNumberBlocked").attr("value","100");	
+}
