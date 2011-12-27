@@ -25,11 +25,11 @@ if (typeof Fbdc == "undefined") {
   var Fbdc = {
 	  
 	/* The domain names Facebook phones home with, lowercased. */
-	FACEBOOK_DOMAINS : ['facebook.com', 'facebook.net', 'fbcdn.net'],
+	DOMAINS : ['facebook.com', 'facebook.net', 'fbcdn.net'],
 	
 		
 	/* The XPCOM interfaces. */
-	FACEBOOK_INTERFACES : Components.interfaces,
+	INTERFACES : Components.interfaces,
 	
 	/* The inclusion of the jQuery library*/
 	jQuery : jQuery.noConflict(),
@@ -37,9 +37,9 @@ if (typeof Fbdc == "undefined") {
 	/*
 	  Determines whether any of a bucket of domains is part of a URL, regex free.
 	*/
-	isFacebookMatching: function(url, domains) {
-	  const FACEBOOK_DOMAIN_COUNT = domains.length;
-	  for (var i = 0; i < FACEBOOK_DOMAIN_COUNT; i++)
+	isMatching: function(url, domains) {
+	  const DOMAIN_COUNT = domains.length;
+	  for (var i = 0; i < DOMAIN_COUNT; i++)
 		  if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
 			  // A valid URL has at least two characters ("//"), then the domain.
 	},
@@ -60,23 +60,22 @@ if (typeof Fbdc == "undefined") {
 	/* Initialization */	  
     init : function() {  
 
-		
 		/* Traps and selectively cancels a request. */
         Fbdc.obsService =  Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);  
 		Fbdc.obsService.addObserver({observe: function(subject) {
-			Fbdc.FACEBOOK_NOTIFICATION_CALLBACKS =
-				subject.QueryInterface(Fbdc.FACEBOOK_INTERFACES.nsIHttpChannel).notificationCallbacks
+			Fbdc.NOTIFICATION_CALLBACKS =
+				subject.QueryInterface(Fbdc.INTERFACES.nsIHttpChannel).notificationCallbacks
 					|| subject.loadGroup.notificationCallbacks;
-			Fbdc.FACEBOOK_BROWSER =
-				Fbdc.FACEBOOK_NOTIFICATION_CALLBACKS &&
+			Fbdc.BROWSER =
+				Fbdc.NOTIFICATION_CALLBACKS &&
 					gBrowser.getBrowserForDocument(
-					  Fbdc.FACEBOOK_NOTIFICATION_CALLBACKS
-						.getInterface(Fbdc.FACEBOOK_INTERFACES.nsIDOMWindow).top.document
+					  Fbdc.NOTIFICATION_CALLBACKS
+						.getInterface(Fbdc.INTERFACES.nsIDOMWindow).top.document
 					);
 			subject.referrer.ref;
 				// HACK: The URL read otherwise outraces the window unload.
-			Fbdc.FACEBOOK_BROWSER && !Fbdc.isFacebookMatching(Fbdc.FACEBOOK_BROWSER.currentURI.spec, Fbdc.FACEBOOK_DOMAINS) &&
-				Fbdc.isFacebookMatching(subject.URI.spec, Fbdc.FACEBOOK_DOMAINS) &&
+			Fbdc.BROWSER && !Fbdc.isMatching(Fbdc.BROWSER.currentURI.spec, Fbdc.DOMAINS) &&
+				Fbdc.isMatching(subject.URI.spec, Fbdc.DOMAINS) &&
 					subject.cancel(Components.results.NS_ERROR_ABORT);
 		  }}, 'http-on-modify-request', false);
 	}
