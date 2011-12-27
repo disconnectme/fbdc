@@ -20,53 +20,68 @@
     Brian Kennish <byoogle@gmail.com>
 */
 
-/* The inclusion of the jQuery library*/
-$fbdc_mb = jQuery.noConflict();
+if (typeof Fbdc == "undefined") {  
 
-/* The domain names Facebook phones home with, lowercased. */
-const FACEBOOK_DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
+  var Fbdc = {
+	  
+	/* The domain names Facebook phones home with, lowercased. */
+	FACEBOOK_DOMAINS : ['facebook.com', 'facebook.net', 'fbcdn.net'],
+	
+		
+	/* The XPCOM interfaces. */
+	FACEBOOK_INTERFACES : Components.interfaces,
+	
+	/* The inclusion of the jQuery library*/
+	jQuery : jQuery.noConflict(),
+	  
+	/*
+	  Determines whether any of a bucket of domains is part of a URL, regex free.
+	*/
+	isFacebookMatching: function(url, domains) {
+	  const FACEBOOK_DOMAIN_COUNT = domains.length;
+	  for (var i = 0; i < FACEBOOK_DOMAIN_COUNT; i++)
+		  if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
+			  // A valid URL has at least two characters ("//"), then the domain.
+	},
+	
 
-/* The XPCOM interfaces. */
-const FACEBOOK_INTERFACES = Components.interfaces;
+	/* Lifts international trade embargo on Facebook */
+	fbdcUnblock: function(){
+		alert("I am unblocking facebook");
+	
+	},
+	
+	/* Enforce international trade embargo on Facebook */
+	fbdcBlock: function(){
+		alert("I am blocking facebook");
+		Fbdc.jQuery("#FacebookNumberBlocked").attr("value","100");	
+	},
+	  
+	/* Initialization */	  
+    init : function() {  
 
-/*
-  Determines whether any of a bucket of domains is part of a URL, regex free.
-*/
-function isFacebookMatching(url, domains) {
-  const FACEBOOK_DOMAIN_COUNT = domains.length;
-  for (var i = 0; i < FACEBOOK_DOMAIN_COUNT; i++)
-      if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
-          // A valid URL has at least two characters ("//"), then the domain.
+		
+		/* Traps and selectively cancels a request. */
+        Fbdc.obsService =  Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);  
+		Fbdc.obsService.addObserver({observe: function(subject) {
+			Fbdc.FACEBOOK_NOTIFICATION_CALLBACKS =
+				subject.QueryInterface(Fbdc.FACEBOOK_INTERFACES.nsIHttpChannel).notificationCallbacks
+					|| subject.loadGroup.notificationCallbacks;
+			Fbdc.FACEBOOK_BROWSER =
+				Fbdc.FACEBOOK_NOTIFICATION_CALLBACKS &&
+					gBrowser.getBrowserForDocument(
+					  Fbdc.FACEBOOK_NOTIFICATION_CALLBACKS
+						.getInterface(Fbdc.FACEBOOK_INTERFACES.nsIDOMWindow).top.document
+					);
+			subject.referrer.ref;
+				// HACK: The URL read otherwise outraces the window unload.
+			Fbdc.FACEBOOK_BROWSER && !Fbdc.isFacebookMatching(Fbdc.FACEBOOK_BROWSER.currentURI.spec, Fbdc.FACEBOOK_DOMAINS) &&
+				Fbdc.isFacebookMatching(subject.URI.spec, Fbdc.FACEBOOK_DOMAINS) &&
+					subject.cancel(Components.results.NS_ERROR_ABORT);
+		  }}, 'http-on-modify-request', false);
+	}
+  }
 }
 
-/* Traps and selectively cancels a request. */
-Components.classes['@mozilla.org/observer-service;1']
-  .getService(FACEBOOK_INTERFACES.nsIObserverService)
-  .addObserver({observe: function(subject) {
-    const FACEBOOK_NOTIFICATION_CALLBACKS =
-        subject.QueryInterface(FACEBOOK_INTERFACES.nsIHttpChannel).notificationCallbacks
-            || subject.loadGroup.notificationCallbacks;
-    const FACEBOOK_BROWSER =
-        FACEBOOK_NOTIFICATION_CALLBACKS &&
-            gBrowser.getBrowserForDocument(
-              FACEBOOK_NOTIFICATION_CALLBACKS
-                .getInterface(FACEBOOK_INTERFACES.nsIDOMWindow).top.document
-            );
-    subject.referrer.ref;
-        // HACK: The URL read otherwise outraces the window unload.
-    FACEBOOK_BROWSER && !isFacebookMatching(FACEBOOK_BROWSER.currentURI.spec, FACEBOOK_DOMAINS) &&
-        isFacebookMatching(subject.URI.spec, FACEBOOK_DOMAINS) &&
-            subject.cancel(Components.results.NS_ERROR_ABORT);
-  }}, 'http-on-modify-request', false);
-
-/* Lifts international trade embargo on Facebook */
-function fbdcUnblock(){
-	alert("I am unblocking facebook");
-
-}
-
-/* Enforce international trade embargo on Facebook */
-function fbdcBlock(){
-	alert("I am blocking facebook");
-	$fbdc_mb("#FacebookNumberBlocked").attr("value","100");	
-}
+/* Initialization of Fbdc object on load */
+window.addEventListener("load", function() { Fbdc.init(); }, false);  

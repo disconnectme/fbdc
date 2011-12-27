@@ -43,12 +43,12 @@
 	  </toolbarbutton>			
 
 	  <menupopup id="statusFacebookBarPanelMenu" position="after_start">  
-        <menuitem oncommand='fbdcBlock()'>
+        <menuitem oncommand='Fbdc.fbdcBlock()'>
           <image class="channelIcon" src="chrome://fbdc/content/facebook-activated.png" />				
           <label value="Activated" />  
           <label value="0" id="FacebookNumberBlocked" />  					
 	    </menuitem>			
-        <menuitem oncommand='fbdcUnblock()'>
+        <menuitem oncommand='Fbdc.fbdcUnblock()'>
           <image class="channelIcon" src="chrome://fbdc/content/facebook-deactivated.png" />				
           <label value="Deactivated" />  
 		
