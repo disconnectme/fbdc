@@ -20,10 +20,42 @@
 
     Brian Kennish <byoogle@gmail.com>
 -->
+<?xml-stylesheet type="text/css"  href="chrome://fbdc/content/overlay.css"?>
 <overlay
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:html="http://www.w3.org/1999/xhtml"
   id="fbdc"
 >
+
+  <script src="jquery.js"/>
   <script src="overlay.js"/>
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <vbox id="disconnect-facebook-appcontent">	
+	
+      <toolbarbutton id="fbdc-toolbarbutton"
+			label="Facebook Disconnect"
+			tooltiptext="Facebook Disconnect"
+			popup="statusFacebookBarPanelMenu"
+			oncommand='facebookChangeState()'				 
+			 >
+        <image id="fbdc-image" src="chrome://fbdc/content/icon.png" />
+	  </toolbarbutton>			
+
+	  <menupopup id="statusFacebookBarPanelMenu" position="after_start">  
+        <menuitem oncommand='Fbdc.fbdcBlock()'>
+          <image class="channelIcon" src="chrome://fbdc/content/facebook-activated.png" />				
+          <label value="Activated" />  
+          <label value="0" id="FacebookNumberBlocked" />  					
+	    </menuitem>			
+        <menuitem oncommand='Fbdc.fbdcUnblock()'>
+          <image class="channelIcon" src="chrome://fbdc/content/facebook-deactivated.png" />				
+          <label value="Deactivated" />  
+		
+	    </menuitem>			
+	  </menupopup>  
+	
+    </vbox>
+</toolbarpalette>  
+  
 </overlay>

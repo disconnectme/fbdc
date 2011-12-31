@@ -20,39 +20,67 @@
     Brian Kennish <byoogle@gmail.com>
 */
 
-/* The XPCOM interfaces. */
-const FACEBOOK_INTERFACES = Components.interfaces;
+if (typeof Fbdc == "undefined") {  
 
-/* The domain names Facebook phones home with, lowercased. */
-const FACEBOOK_DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
+  var Fbdc = {
+	  
+	/* The domain names Facebook phones home with, lowercased. */
+	DOMAINS : ['facebook.com', 'facebook.net', 'fbcdn.net'],
+	
+		
+	/* The XPCOM interfaces. */
+	INTERFACES : Components.interfaces,
+	
+	/* The inclusion of the jQuery library*/
+	jQuery : jQuery.noConflict(),
+	  
+	/*
+	  Determines whether any of a bucket of domains is part of a URL, regex free.
+	*/
+	isMatching: function(url, domains) {
+	  const DOMAIN_COUNT = domains.length;
+	  for (var i = 0; i < DOMAIN_COUNT; i++)
+		  if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
+			  // A valid URL has at least two characters ("//"), then the domain.
+	},
+	
 
-/*
-  Determines whether any of a bucket of domains is part of a URL, regex free.
-*/
-function isMatching(url, domains) {
-  const DOMAIN_COUNT = domains.length;
-  for (var i = 0; i < DOMAIN_COUNT; i++)
-      if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
-          // A valid URL has at least two characters ("//"), then the domain.
+	/* Lifts international trade embargo on Facebook */
+	fbdcUnblock: function(){
+		alert("I am unblocking facebook");
+	
+	},
+	
+	/* Enforce international trade embargo on Facebook */
+	fbdcBlock: function(){
+		alert("I am blocking facebook");
+		Fbdc.jQuery("#FacebookNumberBlocked").attr("value","100");	
+	},
+	  
+	/* Initialization */	  
+    init : function() {  
+
+		/* Traps and selectively cancels a request. */
+        Fbdc.obsService =  Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);  
+		Fbdc.obsService.addObserver({observe: function(subject) {
+			Fbdc.NOTIFICATION_CALLBACKS =
+				subject.QueryInterface(Fbdc.INTERFACES.nsIHttpChannel).notificationCallbacks
+					|| subject.loadGroup.notificationCallbacks;
+			Fbdc.BROWSER =
+				Fbdc.NOTIFICATION_CALLBACKS &&
+					gBrowser.getBrowserForDocument(
+					  Fbdc.NOTIFICATION_CALLBACKS
+						.getInterface(Fbdc.INTERFACES.nsIDOMWindow).top.document
+					);
+			subject.referrer.ref;
+				// HACK: The URL read otherwise outraces the window unload.
+			Fbdc.BROWSER && !Fbdc.isMatching(Fbdc.BROWSER.currentURI.spec, Fbdc.DOMAINS) &&
+				Fbdc.isMatching(subject.URI.spec, Fbdc.DOMAINS) &&
+					subject.cancel(Components.results.NS_ERROR_ABORT);
+		  }}, 'http-on-modify-request', false);
+	}
+  }
 }
 
-/* Traps and selectively cancels a request. */
-Components.classes['@mozilla.org/observer-service;1']
-  .getService(FACEBOOK_INTERFACES.nsIObserverService)
-  .addObserver({observe: function(subject) {
-    const NOTIFICATION_CALLBACKS =
-        subject.QueryInterface(
-          FACEBOOK_INTERFACES.nsIHttpChannel
-        ).notificationCallbacks || subject.loadGroup.notificationCallbacks;
-    const BROWSER =
-        NOTIFICATION_CALLBACKS &&
-            gBrowser.getBrowserForDocument(
-              NOTIFICATION_CALLBACKS
-                .getInterface(FACEBOOK_INTERFACES.nsIDOMWindow).top.document
-            );
-    subject.referrer.ref;
-        // HACK: The URL read otherwise outraces the window unload.
-    BROWSER && !isMatching(BROWSER.currentURI.spec, FACEBOOK_DOMAINS) &&
-        isMatching(subject.URI.spec, FACEBOOK_DOMAINS) &&
-            subject.cancel(Components.results.NS_ERROR_ABORT);
-  }}, 'http-on-modify-request', false);
+/* Initialization of Fbdc object on load */
+window.addEventListener("load", function() { Fbdc.init(); }, false);  

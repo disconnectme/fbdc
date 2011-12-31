@@ -28,7 +28,7 @@
     <em:type>2</em:type><!-- Extension -->
     <em:id>facebook@disconnect.me</em:id>
     <em:name>Facebook Disconnect</em:name>
-    <em:version>1.0.1</em:version>
+    <em:version>1.0.0</em:version>
     <em:creator>Disconnect</em:creator>
     <em:developer>Brian Kennish</em:developer>
     <em:description>
@@ -42,7 +42,7 @@
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>1.5</em:minVersion>
-        <em:maxVersion>10.*</em:maxVersion>
+        <em:maxVersion>10.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
     <!-- Flock -->
