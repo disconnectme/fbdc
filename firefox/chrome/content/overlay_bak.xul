@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
-  Overlay markup that stops Facebook from tracking the webpages you go to.
-  This version adds a button to the location bar.
+  Overlay markup that stops Facebook from tracking the webpages you go to. 
+  This version allows you to add a button to the tool bar.
 
   Copyright 2010, 2011 Disconnect, Inc.
 
@@ -20,6 +20,7 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Gary Teh <garyjob@gmail.com>	
 -->
 <?xml-stylesheet type="text/css"  href="chrome://fbdc/content/overlay.css"?>
 <overlay
@@ -31,18 +32,18 @@
   <script src="jquery.js"/>
   <script src="overlay.js"/>
 
-<hbox id="urlbar-icons">  
-  
-
-        <image id="fbdc-image-urlbar" src="chrome://fbdc/content/icon_urlbar_deactive.png" 
+  <toolbarpalette id="BrowserToolbarPalette">
+    <vbox id="disconnect-facebook-appcontent">	
+	
+      <toolbarbutton id="fbdc-toolbarbutton"
 			label="Facebook Disconnect"
 			tooltiptext="Facebook Disconnect"
 			popup="statusFacebookBarPanelMenu"
 			oncommand='facebookChangeState()'				 
-		
-		/>
+			 >
+        <image id="fbdc-image" src="chrome://fbdc/content/icon.png" />
+	  </toolbarbutton>			
 
-	  
 	  <menupopup id="statusFacebookBarPanelMenu" position="after_start">  
         <menuitem oncommand='Fbdc.fbdcBlock()'>
           <image class="channelIcon" src="chrome://fbdc/content/facebook-activated.png" />				
@@ -56,7 +57,7 @@
 	    </menuitem>			
 	  </menupopup>  
 	
-  
-</hbox>  
+    </vbox>
+</toolbarpalette>  
   
 </overlay>

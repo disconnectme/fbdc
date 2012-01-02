@@ -56,10 +56,25 @@ if (typeof Fbdc == "undefined") {
 		alert("I am blocking facebook");
 		Fbdc.jQuery("#FacebookNumberBlocked").attr("value","100");	
 	},
+	
+	/* Switches the image displayed by the Url Bar icon */
+	iconAnimation : function(){
+		Fbdc.jQuery("#fbdc-image-urlbar").mouseover(function(){
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar.png");
+		});	
+		Fbdc.jQuery("#fbdc-image-urlbar").mouseout(function(){
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_deactive.png");
+		});			
+	},
+	
+	
 	  
 	/* Initialization */	  
     init : function() {  
-
+	
+		/* handles the url bar icon animation */
+		Fbdc.iconAnimation();
+		
 		/* Traps and selectively cancels a request. */
         Fbdc.obsService =  Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);  
 		Fbdc.obsService.addObserver({observe: function(subject) {
@@ -79,6 +94,7 @@ if (typeof Fbdc == "undefined") {
 					subject.cancel(Components.results.NS_ERROR_ABORT);
 		  }}, 'http-on-modify-request', false);
 	}
+	
   }
 }
 
