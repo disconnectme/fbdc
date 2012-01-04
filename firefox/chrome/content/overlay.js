@@ -20,6 +20,8 @@
     Brian Kennish <byoogle@gmail.com>
 */
 
+
+
 if (typeof Fbdc == "undefined") {  
 
   var Fbdc = {
@@ -73,27 +75,37 @@ if (typeof Fbdc == "undefined") {
     init : function() {  
 	
 		/* handles the url bar icon animation */
-		Fbdc.iconAnimation();
+		Fbdc.iconAnimation();	
 		
-		/* Traps and selectively cancels a request. */
-        Fbdc.obsService =  Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);  
-		Fbdc.obsService.addObserver({observe: function(subject) {
-			Fbdc.NOTIFICATION_CALLBACKS =
-				subject.QueryInterface(Fbdc.INTERFACES.nsIHttpChannel).notificationCallbacks
-					|| subject.loadGroup.notificationCallbacks;
-			Fbdc.BROWSER =
-				Fbdc.NOTIFICATION_CALLBACKS &&
-					gBrowser.getBrowserForDocument(
-					  Fbdc.NOTIFICATION_CALLBACKS
-						.getInterface(Fbdc.INTERFACES.nsIDOMWindow).top.document
-					);
-			subject.referrer.ref;
-				// HACK: The URL read otherwise outraces the window unload.
-			Fbdc.BROWSER && !Fbdc.isMatching(Fbdc.BROWSER.currentURI.spec, Fbdc.DOMAINS) &&
-				Fbdc.isMatching(subject.URI.spec, Fbdc.DOMAINS) &&
-					subject.cancel(Components.results.NS_ERROR_ABORT);
-		  }}, 'http-on-modify-request', false);
-	}
+		
+		if(gBrowser) gBrowser.addEventListener("DOMContentLoaded", this.onPageLoad, false);  
+	},
+	
+    onPageLoad: function(aEvent) {  
+        var doc = aEvent.originalTarget; // doc is document that triggered the event  
+        var win = doc.defaultView; // win is the window for the doc  
+        // test desired conditions and do something  
+        // if (doc.nodeName == "#document") return; // only documents  
+        // if (win != win.top) return; //only top window.  
+        // if (win.frameElement) return; // skip iframes/frames  
+        alert("Number of Facebook Widgets : " +doc.DcFbdcCount);  
+		
+		var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIWebNavigation)
+						   .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+						   .rootTreeItem
+						   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIDOMWindow);
+						   
+		alert(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount);
+		if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount == "undefined"){
+			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+		}
+		else{
+			Fbdc.jQuery("#fbdc-image-urlbar").display();						
+		}
+		
+    }  	
 	
   }
 }
