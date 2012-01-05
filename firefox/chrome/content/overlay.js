@@ -74,7 +74,7 @@ if (typeof Fbdc == "undefined") {
 	
 	/* show Xpcom status */
 	showXpcom: function(){
-		var myComponent = Cc['@disconnect.me.org/fbdc/contentpolicy;1'].getService().wrappedJSObject;;
+		var myComponent = Cc['@disconnect.me/fbdc/contentpolicy;1'].getService().wrappedJSObject;;
     	alert(myComponent.showStatus()); 			
 	},
 
@@ -174,26 +174,28 @@ if (typeof Fbdc == "undefined") {
         // if (win.frameElement) return; // skip iframes/frames  
         //alert("Number of Facebook Widgets : " +doc.DcFbdcCount); 
 		
-		
-		var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-						   .getInterface(Components.interfaces.nsIWebNavigation)
-						   .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
-						   .rootTreeItem
-						   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-						   .getInterface(Components.interfaces.nsIDOMWindow);
-						   
-		//alert(mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount);
-		
-		if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == "undefined"){
-			mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount = 0;			
-			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
-		}
-		else if(mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == 0){
-			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
-		}
-		else{
-			Fbdc.jQuery("#fbdc-image-urlbar").show();						
-		}
+		window.setTimeout(function() {		
+			var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+							   .getInterface(Components.interfaces.nsIWebNavigation)
+							   .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+							   .rootTreeItem
+							   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+							   .getInterface(Components.interfaces.nsIDOMWindow);
+							   
+			//alert(mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount);
+			
+			if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == "undefined"){
+				mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount = 0;			
+				Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+			}
+			else if(mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == 0){
+				Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+			}
+			else{
+				Fbdc.jQuery("#fbdc-image-urlbar").show();						
+			}
+
+		}, 500);		
 		
     },
 	

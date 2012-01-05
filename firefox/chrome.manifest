@@ -22,5 +22,5 @@ skin fbdc default chrome/skin/
 overlay chrome://browser/content/browser.xul chrome://fbdc/content/overlay.xul
 
 component {d32a3c00-4ed3-11de-8a39-0800200c9a61} components/FbdcContentPolicy.js
-contract @disconnect.me.org/fbdc/contentpolicy;1 {d32a3c00-4ed3-11de-8a39-0800200c9a61}
-category content-policy @disconnect.me.org/fbdc/contentpolicy;1 @disconnect.me.org/fbdc/contentpolicy;1
+contract @disconnect.me/fbdc/contentpolicy;1 {d32a3c00-4ed3-11de-8a39-0800200c9a61}
+category content-policy @disconnect.me/fbdc/contentpolicy;1 @disconnect.me/fbdc/contentpolicy;1
