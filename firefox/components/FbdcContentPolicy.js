@@ -59,6 +59,7 @@ FbdcContentPolicy.prototype =
 	
 	/* Determines whether any of a bucket of domains is part of a URL, regex free. */
 	isMatching: function(url, domains) {
+	  url = "   "+url;
 	  const DOMAIN_COUNT = domains.length;
 	  for (var i = 0; i < DOMAIN_COUNT; i++)
 		  if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;

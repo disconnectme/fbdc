@@ -24,14 +24,7 @@
 if (typeof Fbdc == "undefined") {  
 
   var Fbdc = {
-	  
-	/* The domain names Facebook phones home with, lowercased. */
-	DOMAINS : ['facebook.com', 'facebook.net', 'fbcdn.net'],
-	
-		
-	/* The XPCOM interfaces. */
-	INTERFACES : Components.interfaces,
-	
+	  		
 	/* The inclusion of the jQuery library*/
 	jQuery : jQuery.noConflict(),
 	  
