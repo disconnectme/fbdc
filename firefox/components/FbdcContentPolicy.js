@@ -1,3 +1,24 @@
+/*
+  An XPcom component that stops Facebook from tracking the webpages you go to.
+
+  Copyright 2010, 2011 Disconnect, Inc.
+
+  This program is free software: you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free Software
+  Foundation, either version 3 of the License, or (at your option) any later
+  version.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License along with
+  this program. If not, see <http://www.gnu.org/licenses/>.
+
+  Authors (one per line):
+
+    Gary Teh <garyjob@gmail.com>	
+*/
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -31,37 +52,39 @@ FbdcContentPolicy.prototype =
 	rejectedLoc : "",
 	
 	// define the function we want to expose in our interface  
-	hello: function() {  
+	showStatus: function() {  
 		//return "Hello World!";  
 		return this.rejectedLoc ;
 	},  	
 	
-	/*
-	  Determines whether any of a bucket of domains is part of a URL, regex free.
-	*/
+	/* Determines whether any of a bucket of domains is part of a URL, regex free. */
 	isMatching: function(url, domains) {
 	  const DOMAIN_COUNT = domains.length;
 	  for (var i = 0; i < DOMAIN_COUNT; i++)
 		  if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
 			  // A valid URL has at least two characters ("//"), then the domain.
 	},
-
+	
+	/* A function of the nsIContentPolicy interface : called when an element is to be loaded from the internet */
 	shouldLoad: function (contType, contLoc, reqOrig, aContext, typeGuess, extra) {
 		if(reqOrig != null && contLoc.host!="browser" && contLoc.host!="global"){
 			this.MyLoc += contLoc.host+" : "+reqOrig.host+"\r\n";
-			if( reqOrig.host !=contLoc.host && this.isMatching(contLoc.host, this.DOMAINS)){
+			if( reqOrig.host !=contLoc.host && this.isMatching(contLoc.host, this.DOMAINS) && typeof aContext.ownerDocument != null){
+				
 				try{
-
-
 					
-					if(typeof aContext.ownerDocument.DcFbdcCount == "undefined"){
-						aContext.ownerDocument.DcFbdcCount = 1;
+					if(typeof aContext.ownerDocument.FbdcCount == "undefined"){
+						aContext.ownerDocument.FbdcCount = 1;
 					}
 					else{
-						aContext.ownerDocument.DcFbdcCount += 1;						
+						aContext.ownerDocument.FbdcCount += 1;						
 					}					
 					
-					this.rejectedLoc += reqOrig.host + " > getting "+contLoc.host+"\r\n";
+					var finalBlocking = aContext.ownerDocument.defaultView.content.localStorage.getItem('FbdcStatus');
+					if(finalBlocking == "unblock"){
+						return Ci.nsIContentPolicy.ACCEPT;						
+					}
+
 				}
 				catch(anError){
 					this.rejectedLoc += anError+"\r\n";
@@ -74,6 +97,7 @@ FbdcContentPolicy.prototype =
 		return Ci.nsIContentPolicy.ACCEPT;
 	},
 
+	/* A function of the nsIContentPolicy interface : called when an element is to be loaded from the internet */
     shouldProcess: function (contType, contLoc, reqOrig, ctx, mimeType, extra) {
        return Ci.nsIContentPolicy.ACCEPT;
     }

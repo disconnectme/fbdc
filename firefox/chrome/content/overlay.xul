@@ -34,26 +34,25 @@
 <hbox id="urlbar-icons">  
   
 
-        <image id="fbdc-image-urlbar" src="chrome://fbdc/content/icon_urlbar_deactive.png" 
+        <image id="fbdc-image-urlbar" src="chrome://fbdc/content/icon_urlbar.png" 
 			label="Facebook Disconnect"
 			tooltiptext="Facebook Disconnect"
 			popup="statusFacebookBarPanelMenu"
-			oncommand='facebookChangeState()'				 
+			onclick='Fbdc.updateCount()'				 
 		
 		/>
 
 	  
 	  <menupopup id="statusFacebookBarPanelMenu" position="after_start">  
-        <menuitem oncommand='Fbdc.fbdcBlock()'>
-          <image class="channelIcon" src="chrome://fbdc/content/facebook-activated.png" />				
-          <label value="Activated" />  
-          <label value="0" id="FacebookNumberBlocked" />  					
+        <menuitem oncommand='Fbdc.block()'>
+          <image id="FbdcBlockingIcon" class="channelIcon" src="chrome://fbdc/content/facebook-activated.png" />				
+          <label value="0" id="FbdcBlock" />  							  
+
 	    </menuitem>			
-        <menuitem oncommand='Fbdc.fbdcUnblock()'>
+        <menuitem oncommand='Fbdc.unblock()'>
           <image class="channelIcon" src="chrome://fbdc/content/facebook-deactivated.png" />				
-          <label value="Deactivated" />  
-		
-	    </menuitem>			
+          <label value="Unblock"  id="FbdcUnblock"  />  		
+	    </menuitem>					
 	  </menupopup>  
 	
   

@@ -18,9 +18,8 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Gary Teh <garyjob@gmail.com>	
 */
-
-
 
 if (typeof Fbdc == "undefined") {  
 
@@ -46,49 +45,142 @@ if (typeof Fbdc == "undefined") {
 			  // A valid URL has at least two characters ("//"), then the domain.
 	},
 	
+	/* updates the menu icon with the number of blocks */
+	updateCount: function(){
+
+		var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIWebNavigation)
+						   .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+						   .rootTreeItem
+						   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIDOMWindow);		
+				
+		//alert(mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount);
+		if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == "undefined"){
+			mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount= 0;
+		}
+		
+		if(	mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount > 0 ){
+			Fbdc.jQuery("#FbdcBlockingIcon").attr("src", "chrome://fbdc/content/facebook-blocked.png" );
+		}
+		else{
+			Fbdc.jQuery("#FbdcBlockingIcon").attr("src", "chrome://fbdc/content/facebook-activated.png" );			
+		}
+		
+		if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){
+			Fbdc.jQuery("#FbdcBlock").attr("value","Block");			
+			Fbdc.jQuery("#FbdcUnblock").attr("value",mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount+" unblocked");						
+		}
+		else{
+			Fbdc.jQuery("#FbdcBlock").attr("value",mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount+" blocked");			
+			Fbdc.jQuery("#FbdcUnblock").attr("value","Unblock");						
+		}		
+
+
+	},
+	
+	/* show Xpcom status */
+	showXpcom: function(){
+		var myComponent = Cc['@disconnect.me.org/fbdc/contentpolicy;1'].getService().wrappedJSObject;;
+    	alert(myComponent.showStatus()); 			
+	},
 
 	/* Lifts international trade embargo on Facebook */
-	fbdcUnblock: function(){
-		alert("I am unblocking facebook");
-	
+	unblock: function(){
+		if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){		
+			return;
+		}
+		window.content.localStorage.setItem('FbdcStatus', "unblock");	
+		window.content.location.reload();
+
 	},
 	
 	/* Enforce international trade embargo on Facebook */
-	fbdcBlock: function(){
-		alert("I am blocking facebook");
-		Fbdc.jQuery("#FacebookNumberBlocked").attr("value","100");	
+	block: function(){
+		if(window.content.localStorage.getItem('FbdcStatus')!="unblock"){		
+			return;
+		}		
+		window.content.localStorage.setItem('FbdcStatus', "block");	
+		window.content.location.reload();		
 	},
 	
 	/* Switches the image displayed by the Url Bar icon */
 	iconAnimation : function(){
 		Fbdc.jQuery("#fbdc-image-urlbar").mouseover(function(){
+															 
 			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar.png");
 		});	
 		Fbdc.jQuery("#fbdc-image-urlbar").mouseout(function(){
-			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_deactive.png");
+			if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){
+				Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_inactive.png");								
+			}
+			else{
+				Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_active.png");
+			}
 		});			
+		if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_inactive.png");								
+		}
+		else{
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_active.png");
+		}
+		
+		
 	},
 	
-	
-	  
 	/* Initialization */	  
     init : function() {  
 	
 		/* handles the url bar icon animation */
 		Fbdc.iconAnimation();	
-		
-		
-		if(gBrowser) gBrowser.addEventListener("DOMContentLoaded", this.onPageLoad, false);  
+
+		if(gBrowser){
+			gBrowser.addEventListener("DOMContentLoaded", Fbdc.onPageLoad, false);  
+			gBrowser.tabContainer.addEventListener("TabAttrModified", Fbdc.onTabChanged, false);  		
+		}
 	},
 	
+	/* called when another tab is clicked */
+	onTabChanged: function(aEvent){
+		var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIWebNavigation)
+						   .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+						   .rootTreeItem
+						   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIDOMWindow);
+						   
+		//alert(mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount);
+		
+		if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == "undefined"){
+			mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount = 0;			
+			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+		}
+		else if(mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == 0){
+			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+		}
+		else{
+			Fbdc.jQuery("#fbdc-image-urlbar").show();						
+		}
+		if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_inactive.png");								
+
+		}
+		else{
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_active.png");
+		}		
+		
+	},
+	
+	/* called when page is loaded */	
     onPageLoad: function(aEvent) {  
-        var doc = aEvent.originalTarget; // doc is document that triggered the event  
-        var win = doc.defaultView; // win is the window for the doc  
+        //var doc = aEvent.originalTarget; // doc is document that triggered the event  
+        //var win = doc.defaultView; // win is the window for the doc  
         // test desired conditions and do something  
         // if (doc.nodeName == "#document") return; // only documents  
         // if (win != win.top) return; //only top window.  
         // if (win.frameElement) return; // skip iframes/frames  
-        alert("Number of Facebook Widgets : " +doc.DcFbdcCount);  
+        //alert("Number of Facebook Widgets : " +doc.DcFbdcCount); 
+		
 		
 		var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
 						   .getInterface(Components.interfaces.nsIWebNavigation)
@@ -97,15 +189,32 @@ if (typeof Fbdc == "undefined") {
 						   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
 						   .getInterface(Components.interfaces.nsIDOMWindow);
 						   
-		alert(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount);
-		if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount == "undefined"){
+		//alert(mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount);
+		
+		if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == "undefined"){
+			mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount = 0;			
+			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+		}
+		else if(mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == 0){
 			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
 		}
 		else{
-			Fbdc.jQuery("#fbdc-image-urlbar").display();						
+			Fbdc.jQuery("#fbdc-image-urlbar").show();						
 		}
 		
-    }  	
+    },
+	
+	/* Returns all attributes in any javascript/DOM Object in a string */
+	getAllAttrInObj: function(obj){
+		status = "";	
+		status += "<p>";
+		Fbdc.jQuery.each(obj , function(name, value) {
+			status += name + ": " + value+"<br>";
+		});	
+		status += "</p>";	
+		return status;
+	},	
+	
 	
   }
 }
