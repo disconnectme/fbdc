@@ -24,7 +24,8 @@
 if (typeof Fbdc == "undefined") {  
 
   var Fbdc = {
-	  		
+	  
+
 	/* The inclusion of the jQuery library*/
 	jQuery : jQuery.noConflict(),
 	  
@@ -123,7 +124,7 @@ if (typeof Fbdc == "undefined") {
 	
 	/* Initialization */	  
     init : function() {  
-	
+
 		/* handles the url bar icon animation */
 		Fbdc.iconAnimation();	
 
@@ -166,13 +167,6 @@ if (typeof Fbdc == "undefined") {
 	
 	/* called when page is loaded */	
     onPageLoad: function(aEvent) {  
-        //var doc = aEvent.originalTarget; // doc is document that triggered the event  
-        //var win = doc.defaultView; // win is the window for the doc  
-        // test desired conditions and do something  
-        // if (doc.nodeName == "#document") return; // only documents  
-        // if (win != win.top) return; //only top window.  
-        // if (win.frameElement) return; // skip iframes/frames  
-        //alert("Number of Facebook Widgets : " +doc.DcFbdcCount); 
 		
 		window.setTimeout(function() {		
 			var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
@@ -194,6 +188,9 @@ if (typeof Fbdc == "undefined") {
 			else{
 				Fbdc.jQuery("#fbdc-image-urlbar").show();						
 			}
+			
+			var doc = mainWindow.getBrowser().selectedBrowser.contentWindow.document;
+
 
 		}, 500);		
 		
