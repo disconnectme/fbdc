@@ -78,6 +78,12 @@ if (typeof Fbdc == "undefined") {
 		var myComponent = Cc['@disconnect.me/fbdc/contentpolicy;1'].getService().wrappedJSObject;;
     	alert(myComponent.showStatus()); 			
 	},
+	
+	/* clear Xpcom status */
+	clearXpcom: function(){
+		var myComponent = Cc['@disconnect.me/fbdc/contentpolicy;1'].getService().wrappedJSObject;;
+    	myComponent.clearStatus(); 			
+	},	
 
 	/* Lifts international trade embargo on Facebook */
 	unblock: function(){

@@ -47,7 +47,7 @@ FbdcContentPolicy.prototype =
 	QueryInterface:     XPCOMUtils.generateQI([Ci.nsIContentPolicy]),
 
 	/* The domain names Facebook phones home with, lowercased. */
-	DOMAINS : ['facebook.com', 'facebook.net', 'fbcdn.net'],
+	DOMAINS : ['facebook.com', 'facebook.net', 'fbcdn.net','apps.facebook.com','connect.facebook.net'],
 	
 	/* list of all rejected locations */
 	rejectedLoc : "",
@@ -56,6 +56,10 @@ FbdcContentPolicy.prototype =
 	showStatus: function() {  
 		//return "Hello World!";  
 		return this.rejectedLoc ;
+	},  	
+
+	clearStatus: function() {  
+		this.rejectedLoc ="";
 	},  	
 	
 	/* Determines whether any of a bucket of domains is part of a URL, regex free. */
@@ -71,8 +75,18 @@ FbdcContentPolicy.prototype =
 	shouldLoad: function (contType, contLoc, reqOrig, aContext, typeGuess, extra) {
 		
 		if(reqOrig != null && reqOrig.host!="browser" && contLoc.host!="browser" && contLoc.host!="global" && contType!=6){
+			
+			var topWindowLoc = "";
+			try{
+				if(aContext.ownerDocument != null){
+					topWindowLoc = aContext.ownerDocument.defaultView.content.top.location.href;
+				}
+			}
+			catch(anError){
+				this.rejectedLoc += anError+"\r\n";				
+			}
 
-			if( reqOrig.host !=contLoc.host && !this.isMatching(reqOrig.host, this.DOMAINS) && this.isMatching(contLoc.host, this.DOMAINS) && typeof aContext.ownerDocument != null){
+			if( reqOrig.host !=contLoc.host && !this.isMatching(reqOrig.host, this.DOMAINS) && !this.isMatching(topWindowLoc, this.DOMAINS) && this.isMatching(contLoc.host, this.DOMAINS) && typeof aContext.ownerDocument != null){
 				
 				try{
 					
@@ -91,10 +105,14 @@ FbdcContentPolicy.prototype =
 				}
 				catch(anError){
 					this.rejectedLoc += anError+"\r\n";
-					
 				}
-				this.rejectedLoc += contType+" : "+contLoc.host+" : "+reqOrig.host+"\r\n";				
-				return Ci.nsIContentPolicy.REJECT;				
+				//this.rejectedLoc += contType+" : "+contLoc+" : "+contLoc.host+" : "+reqOrig+" : "+reqOrig.host+" : "+aContext+" : "+aContext.src+":"+typeGuess+":"+extra+"\r\n";				
+				this.rejectedLoc += reqOrig.host+" is calling "+contLoc.host+" : top window "+aContext.ownerDocument.defaultView.content.top.location.href+" vs loading window "+aContext.ownerDocument.defaultView.content.self.location.href+" : "+aContext.src+":\r\n\r\n";								
+				//this is the content in an iframe calling something that is blocked
+
+				return Ci.nsIContentPolicy.REJECT;									
+
+
 			}
 		}
 

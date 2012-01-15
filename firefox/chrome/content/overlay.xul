@@ -53,8 +53,6 @@
           <image class="channelIcon" src="chrome://fbdc/content/facebook-deactivated.png" />				
           <label value="Unblock"  id="FbdcUnblock"  />  		
 	    </menuitem>					
-	  </menupopup>  
-	
-  
+	  </menupopup>    
 </hbox>  
 </overlay>
