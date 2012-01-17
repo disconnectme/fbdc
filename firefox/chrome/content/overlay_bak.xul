@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
-  Overlay markup that stops Facebook from tracking the webpages you go to.
-  This version adds a button to the location bar.
+  Overlay markup that stops Facebook from tracking the webpages you go to. 
+  This version allows you to add a button to the tool bar.
 
   Copyright 2010, 2011 Disconnect, Inc.
 
@@ -20,6 +20,7 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Gary Teh <garyjob@gmail.com>	
 -->
 <?xml-stylesheet type="text/css"  href="chrome://fbdc/content/overlay.css"?>
 <overlay
@@ -31,28 +32,32 @@
   <script src="jquery.js"/>
   <script src="overlay.js"/>
 
-<hbox id="urlbar-icons">  
-  
-
-        <image id="fbdc-image-urlbar" src="chrome://fbdc/content/icon_urlbar.png" 
+  <toolbarpalette id="BrowserToolbarPalette">
+    <vbox id="disconnect-facebook-appcontent">	
+	
+      <toolbarbutton id="fbdc-toolbarbutton"
 			label="Facebook Disconnect"
 			tooltiptext="Facebook Disconnect"
 			popup="statusFacebookBarPanelMenu"
-			onclick='Fbdc.updateCount()'				 
-		
-		/>
+			oncommand='facebookChangeState()'				 
+			 >
+        <image id="fbdc-image" src="chrome://fbdc/content/icon.png" />
+	  </toolbarbutton>			
 
-	  
 	  <menupopup id="statusFacebookBarPanelMenu" position="after_start">  
-        <menuitem oncommand='Fbdc.block()'>
-          <image id="FbdcBlockingIcon" class="channelIcon" src="chrome://fbdc/content/facebook-activated.png" />				
-          <label value="0" id="FbdcBlock" />  							  
-
+        <menuitem oncommand='Fbdc.fbdcBlock()'>
+          <image class="channelIcon" src="chrome://fbdc/content/facebook-activated.png" />				
+          <label value="Activated" />  
+          <label value="0" id="FacebookNumberBlocked" />  					
 	    </menuitem>			
-        <menuitem oncommand='Fbdc.unblock()'>
+        <menuitem oncommand='Fbdc.fbdcUnblock()'>
           <image class="channelIcon" src="chrome://fbdc/content/facebook-deactivated.png" />				
-          <label value="Unblock"  id="FbdcUnblock"  />  		
-	    </menuitem>					
-	  </menupopup>    
-</hbox>  
+          <label value="Deactivated" />  
+		
+	    </menuitem>			
+	  </menupopup>  
+	
+    </vbox>
+</toolbarpalette>  
+  
 </overlay>

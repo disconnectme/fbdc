@@ -18,41 +18,204 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Gary Teh <garyjob@gmail.com>	
 */
 
-/* The XPCOM interfaces. */
-const FACEBOOK_INTERFACES = Components.interfaces;
+if (typeof Fbdc == "undefined") {  
 
-/* The domain names Facebook phones home with, lowercased. */
-const FACEBOOK_DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
+  var Fbdc = {
+	  
 
-/*
-  Determines whether any of a bucket of domains is part of a URL, regex free.
-*/
-function isMatching(url, domains) {
-  const DOMAIN_COUNT = domains.length;
-  for (var i = 0; i < DOMAIN_COUNT; i++)
-      if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
-          // A valid URL has at least two characters ("//"), then the domain.
+	/* The inclusion of the jQuery library*/
+	jQuery : jQuery.noConflict(),
+	  
+	/*
+	  Determines whether any of a bucket of domains is part of a URL, regex free.
+	*/
+	isMatching: function(url, domains) {
+	  const DOMAIN_COUNT = domains.length;
+	  for (var i = 0; i < DOMAIN_COUNT; i++)
+		  if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
+			  // A valid URL has at least two characters ("//"), then the domain.
+	},
+	
+	/* updates the menu icon with the number of blocks */
+	updateCount: function(){
+
+		var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIWebNavigation)
+						   .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+						   .rootTreeItem
+						   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIDOMWindow);		
+				
+		//alert(mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount);
+		if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == "undefined"){
+			mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount= 0;
+		}
+		
+		if(	mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount > 0 ){
+			Fbdc.jQuery("#FbdcBlockingIcon").attr("src", "chrome://fbdc/content/facebook-blocked.png" );
+		}
+		else{
+			Fbdc.jQuery("#FbdcBlockingIcon").attr("src", "chrome://fbdc/content/facebook-activated.png" );			
+		}
+		
+		if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){
+			Fbdc.jQuery("#FbdcBlock").attr("value","Block");			
+			Fbdc.jQuery("#FbdcUnblock").attr("value",mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount+" unblocked");						
+		}
+		else{
+			Fbdc.jQuery("#FbdcBlock").attr("value",mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount+" blocked");			
+			Fbdc.jQuery("#FbdcUnblock").attr("value","Unblock");						
+		}		
+
+
+	},
+	
+	/* show Xpcom status */
+	showXpcom: function(){
+		var myComponent = Cc['@disconnect.me/fbdc/contentpolicy;1'].getService().wrappedJSObject;;
+    	alert(myComponent.showStatus()); 			
+	},
+	
+	/* clear Xpcom status */
+	clearXpcom: function(){
+		var myComponent = Cc['@disconnect.me/fbdc/contentpolicy;1'].getService().wrappedJSObject;;
+    	myComponent.clearStatus(); 			
+	},	
+
+	/* Lifts international trade embargo on Facebook */
+	unblock: function(){
+		if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){		
+			return;
+		}
+		window.content.localStorage.setItem('FbdcStatus', "unblock");	
+		window.content.location.reload();
+
+	},
+	
+	/* Enforce international trade embargo on Facebook */
+	block: function(){
+		if(window.content.localStorage.getItem('FbdcStatus')!="unblock"){		
+			return;
+		}		
+		window.content.localStorage.setItem('FbdcStatus', "block");	
+		window.content.location.reload();		
+	},
+	
+	/* Switches the image displayed by the Url Bar icon */
+	iconAnimation : function(){
+		Fbdc.jQuery("#fbdc-image-urlbar").mouseover(function(){
+															 
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar.png");
+		});	
+		Fbdc.jQuery("#fbdc-image-urlbar").mouseout(function(){
+			if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){
+				Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_inactive.png");								
+			}
+			else{
+				Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_active.png");
+			}
+		});			
+		if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_inactive.png");								
+		}
+		else{
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_active.png");
+		}
+		
+		
+	},
+	
+	/* Initialization */	  
+    init : function() {  
+
+		/* handles the url bar icon animation */
+		Fbdc.iconAnimation();	
+
+		if(gBrowser){
+			gBrowser.addEventListener("DOMContentLoaded", Fbdc.onPageLoad, false);  
+			gBrowser.tabContainer.addEventListener("TabAttrModified", Fbdc.onTabChanged, false);  		
+		}
+	},
+	
+	/* called when another tab is clicked */
+	onTabChanged: function(aEvent){
+		var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIWebNavigation)
+						   .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+						   .rootTreeItem
+						   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+						   .getInterface(Components.interfaces.nsIDOMWindow);
+						   
+		//alert(mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount);
+		
+		if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == "undefined"){
+			mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount = 0;			
+			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+		}
+		else if(mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == 0){
+			Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+		}
+		else{
+			Fbdc.jQuery("#fbdc-image-urlbar").show();						
+		}
+		if(window.content.localStorage.getItem('FbdcStatus')=="unblock"){
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_inactive.png");								
+
+		}
+		else{
+			Fbdc.jQuery("#fbdc-image-urlbar").attr("src", "chrome://fbdc/content/icon_urlbar_active.png");
+		}		
+		
+	},
+	
+	/* called when page is loaded */	
+    onPageLoad: function(aEvent) {  
+		
+		window.setTimeout(function() {		
+			var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+							   .getInterface(Components.interfaces.nsIWebNavigation)
+							   .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+							   .rootTreeItem
+							   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+							   .getInterface(Components.interfaces.nsIDOMWindow);
+							   
+			//alert(mainWindow.getBrowser().selectedBrowser.contentWindow.document.DcFbdcCount);
+			
+			if(typeof mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == "undefined"){
+				mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount = 0;			
+				Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+			}
+			else if(mainWindow.getBrowser().selectedBrowser.contentWindow.document.FbdcCount == 0){
+				Fbdc.jQuery("#fbdc-image-urlbar").hide();			
+			}
+			else{
+				Fbdc.jQuery("#fbdc-image-urlbar").show();						
+			}
+			
+			var doc = mainWindow.getBrowser().selectedBrowser.contentWindow.document;
+
+
+		}, 500);		
+		
+    },
+	
+	/* Returns all attributes in any javascript/DOM Object in a string */
+	getAllAttrInObj: function(obj){
+		status = "";	
+		status += "<p>";
+		Fbdc.jQuery.each(obj , function(name, value) {
+			status += name + ": " + value+"<br>";
+		});	
+		status += "</p>";	
+		return status;
+	},	
+	
+	
+  }
 }
 
-/* Traps and selectively cancels a request. */
-Components.classes['@mozilla.org/observer-service;1']
-  .getService(FACEBOOK_INTERFACES.nsIObserverService)
-  .addObserver({observe: function(subject) {
-    const NOTIFICATION_CALLBACKS =
-        subject.QueryInterface(
-          FACEBOOK_INTERFACES.nsIHttpChannel
-        ).notificationCallbacks || subject.loadGroup.notificationCallbacks;
-    const BROWSER =
-        NOTIFICATION_CALLBACKS &&
-            gBrowser.getBrowserForDocument(
-              NOTIFICATION_CALLBACKS
-                .getInterface(FACEBOOK_INTERFACES.nsIDOMWindow).top.document
-            );
-    subject.referrer.ref;
-        // HACK: The URL read otherwise outraces the window unload.
-    BROWSER && !isMatching(BROWSER.currentURI.spec, FACEBOOK_DOMAINS) &&
-        isMatching(subject.URI.spec, FACEBOOK_DOMAINS) &&
-            subject.cancel(Components.results.NS_ERROR_ABORT);
-  }}, 'http-on-modify-request', false);
+/* Initialization of Fbdc object on load */
+window.addEventListener("load", function() { Fbdc.init(); }, false);  
