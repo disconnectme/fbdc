@@ -55,4 +55,27 @@
 	    </menuitem>					
 	  </menupopup>    
 </hbox>  
+
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <vbox id="disconnect-facebook-appcontent">	
+	
+      <toolbarbutton id="fbdc-toolbarbutton"
+			label="Facebook Disconnect"
+			tooltiptext="Facebook Disconnect"
+			oncommand='Fbdc.showXpcom()'				 
+			 >
+        <image id="fbdc-image" src="chrome://fbdc/content/icon.png" />
+	  </toolbarbutton>			
+	  
+      <toolbarbutton id="fbdc-toolbarbutton"
+			label="Facebook Disconnect"
+			tooltiptext="Facebook Disconnect"
+			oncommand='Fbdc.clearXpcom()'				 
+			 >
+        <image id="fbdc-image" src="chrome://fbdc/content/icon.png" />
+	  </toolbarbutton>				  
+	</vbox >
+  </toolbarpalette >
+
 </overlay>
