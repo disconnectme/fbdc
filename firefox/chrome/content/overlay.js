@@ -18,6 +18,7 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Jonty Wareing <jonty@jonty.co.uk>
 */
 
 /* The XPCOM interfaces. */
@@ -25,16 +26,7 @@ const FACEBOOK_INTERFACES = Components.interfaces;
 
 /* The domain names Facebook phones home with, lowercased. */
 const FACEBOOK_DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
-
-/*
-  Determines whether any of a bucket of domains is part of a URL, regex free.
-*/
-function isMatching(url, domains) {
-  const DOMAIN_COUNT = domains.length;
-  for (var i = 0; i < DOMAIN_COUNT; i++)
-      if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
-          // A valid URL has at least two characters ("//"), then the domain.
-}
+const FACEBOOK_REGEX = RegExp('^https?://[^?/]*(' + FACEBOOK_DOMAINS.join('|') + ')[/?^]*', 'i');
 
 /* Traps and selectively cancels a request. */
 Components.classes['@mozilla.org/observer-service;1']
@@ -52,7 +44,7 @@ Components.classes['@mozilla.org/observer-service;1']
             );
     subject.referrer.ref;
         // HACK: The URL read otherwise outraces the window unload.
-    BROWSER && !isMatching(BROWSER.currentURI.spec, FACEBOOK_DOMAINS) &&
-        isMatching(subject.URI.spec, FACEBOOK_DOMAINS) &&
+    BROWSER && !BROWSER.currentURI.spec.match(FACEBOOK_REGEX) &&
+        subject.URI.spec.match(FACEBOOK_REGEX) &&
             subject.cancel(Components.results.NS_ERROR_ABORT);
   }}, 'http-on-modify-request', false);

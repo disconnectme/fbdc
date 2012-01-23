@@ -18,23 +18,16 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Jonty Wareing <jonty@jonty.co.uk>
 */
 
-/* The domain names Facebook phones home with, lowercased. */
-const DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
-
-/*
-  Determines whether any of a bucket of domains is part of a URL, regex free.
-*/
-function isMatching(url, domains) {
-  const DOMAIN_COUNT = domains.length;
-  for (var i = 0; i < DOMAIN_COUNT; i++)
-      if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
-          // A valid URL has at least two characters ("//"), then the domain.
-}
+/* The domain names Facebook phones home with */
+const FACEBOOK_DOMAINS = ['facebook\.com', 'facebook\.net', 'fbcdn\.net'];
+const FACEBOOK_REGEX = RegExp('^https?://[^?/]*(' + FACEBOOK_DOMAINS.join('|') + ')[/?^]*', 'i');
 
 /* Traps and selectively cancels a request. */
-if (!isMatching(location.href, DOMAINS))
+if (!location.href.match(FACEBOOK_REGEX)) {
     document.addEventListener('beforeload', function(event) {
-      if (isMatching(event.url, DOMAINS)) event.preventDefault();
+        if (event.url.match(FACEBOOK_REGEX)) event.preventDefault();
     }, true);
+}
