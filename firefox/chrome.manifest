@@ -1,6 +1,6 @@
 # A chrome manifest that stops Facebook from tracking the webpages you go to.
 #
-# Copyright 2010, 2011 Disconnect, Inc.
+# Copyright 2010-2012 Disconnect, Inc.
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -17,6 +17,14 @@
 # Authors (one per line):
 #
 #   Brian Kennish <byoogle@gmail.com>
-content fbdc chrome/content/
-skin fbdc default chrome/skin/
-overlay chrome://browser/content/browser.xul chrome://fbdc/content/overlay.xul
+#   Gary Teh <garyjob@gmail.com>
+
+# The content policy.
+component {d32a3c00-4ed3-11de-8a39-0800200c9a61} components/policy.js
+contract @disconnect.me/facebook;1 {d32a3c00-4ed3-11de-8a39-0800200c9a61}
+category content-policy @disconnect.me/facebook;1 @disconnect.me/facebook;1
+
+# The overlay.
+content facebook-disconnect chrome/content/
+skin facebook-disconnect default chrome/skin/
+overlay chrome://browser/content/browser.xul chrome://facebook-disconnect/content/overlay.xul

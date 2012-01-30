@@ -1,7 +1,7 @@
 /*
   An overlay script that stops Facebook from tracking the webpages you go to.
 
-  Copyright 2010, 2011 Disconnect, Inc.
+  Copyright 2010-2012 Disconnect, Inc.
 
   This program is free software: you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software
@@ -18,41 +18,102 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Gary Teh <garyjob@gmail.com>
 */
 
-/* The XPCOM interfaces. */
-const FACEBOOK_INTERFACES = Components.interfaces;
+/**
+ * The Facebook Disconnect namespace.
+ */
+if (typeof FacebookDisconnect == 'undefined') {
+  var FacebookDisconnect = {
+    /**
+     * Fetches the number of tracking requests.
+     */
+    getRequestCount: function() {
+      return gBrowser.contentWindow.document.facebookRequestCount;
+    },
 
-/* The domain names Facebook phones home with, lowercased. */
-const FACEBOOK_DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
+    /**
+     * Fetches the blocking state.
+     */
+    isUnblocked: function() {
+      return JSON.parse(content.localStorage.facebookUnblocked);
+    },
 
-/*
-  Determines whether any of a bucket of domains is part of a URL, regex free.
-*/
-function isMatching(url, domains) {
-  const DOMAIN_COUNT = domains.length;
-  for (var i = 0; i < DOMAIN_COUNT; i++)
-      if (url.toLowerCase().indexOf(domains[i], 2) >= 2) return true;
-          // A valid URL has at least two characters ("//"), then the domain.
+    /**
+     * Paints the UI.
+     */
+    render: function(that, icon) {
+      var sourceName = 'src';
+      if (that.getRequestCount())
+          icon.setAttribute(
+            sourceName,
+            'chrome://facebook-disconnect/content/' +
+                (that.isUnblocked() ? 'unblocked' : 'blocked') + '.png'
+          );
+      else icon.removeAttribute(sourceName);
+    },
+
+    /**
+     * Registers event handlers.
+     */
+    initialize: function() {
+      var render = this.render;
+      var that = this;
+      var icon = document.getElementById('facebook-disconnect-icon');
+
+      gBrowser.tabContainer.addEventListener('TabAttrModified', function() {
+        render(that, icon);
+      }, false);
+
+      gBrowser.addEventListener('error', function() {
+        render(that, icon);
+      }, false);
+
+      gBrowser.addEventListener('DOMContentLoaded', function() {
+        render(that, icon);
+      }, false);
+
+      gBrowser.addEventListener('DOMSubtreeModified', function() {
+        render(that, icon);
+      }, false);
+
+      icon.onmouseover = function() { this.className = 'highlighted'; };
+
+      icon.onmouseout = function() { this.removeAttribute('class'); };
+
+      var blocking = document.getElementById('facebook-disconnect-blocking');
+
+      icon.onclick = function() {
+        var labelName = 'label';
+        var requestCount = that.getRequestCount() || 0;
+        var label = ' Facebook request';
+        var shortcutName = 'accesskey';
+
+        if (that.isUnblocked()) {
+          blocking.setAttribute(
+            labelName,
+            'Block ' + requestCount + label + (requestCount - 1 ? 's' : '')
+          );
+          blocking.setAttribute(shortcutName, 'B');
+        } else {
+          blocking.setAttribute(
+            labelName,
+            'Unblock ' + requestCount + label + (requestCount - 1 ? 's' : '')
+          );
+          blocking.setAttribute(shortcutName, 'U');
+        }
+      };
+
+      blocking.addEventListener('command', function() {
+        content.localStorage.facebookUnblocked = !that.isUnblocked();
+        content.location.reload();
+      }, false);
+    }
+  };
 }
 
-/* Traps and selectively cancels a request. */
-Components.classes['@mozilla.org/observer-service;1']
-  .getService(FACEBOOK_INTERFACES.nsIObserverService)
-  .addObserver({observe: function(subject) {
-    const NOTIFICATION_CALLBACKS =
-        subject.QueryInterface(
-          FACEBOOK_INTERFACES.nsIHttpChannel
-        ).notificationCallbacks || subject.loadGroup.notificationCallbacks;
-    const BROWSER =
-        NOTIFICATION_CALLBACKS &&
-            gBrowser.getBrowserForDocument(
-              NOTIFICATION_CALLBACKS
-                .getInterface(FACEBOOK_INTERFACES.nsIDOMWindow).top.document
-            );
-    subject.referrer.ref;
-        // HACK: The URL read otherwise outraces the window unload.
-    BROWSER && !isMatching(BROWSER.currentURI.spec, FACEBOOK_DOMAINS) &&
-        isMatching(subject.URI.spec, FACEBOOK_DOMAINS) &&
-            subject.cancel(Components.results.NS_ERROR_ABORT);
-  }}, 'http-on-modify-request', false);
+/**
+ * Initializes the object.
+ */
+onload = function() { FacebookDisconnect.initialize(); };

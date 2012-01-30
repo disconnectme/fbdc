@@ -2,7 +2,7 @@
 <!--
   Overlay markup that stops Facebook from tracking the webpages you go to.
 
-  Copyright 2010, 2011 Disconnect, Inc.
+  Copyright 2010-2012 Disconnect, Inc.
 
   This program is free software: you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software
@@ -19,11 +19,34 @@
   Authors (one per line):
 
     Brian Kennish <byoogle@gmail.com>
+    Gary Teh <garyjob@gmail.com>
 -->
+<?xml-stylesheet href="overlay.css"?>
 <overlay
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:html="http://www.w3.org/1999/xhtml"
-  id="fbdc"
+  id="facebook-disconnect"
 >
   <script src="overlay.js"/>
+  <box id="urlbar-icons">
+    <image
+      id="facebook-disconnect-icon"
+      tooltiptext="View and manage Facebook requests"
+      popup="facebook-disconnect-popup"
+    />
+    <menupopup id="facebook-disconnect-popup" position="after_end">
+      <menuitem id="facebook-disconnect-blocking"/>
+      <menuseparator/>
+      <menuitem
+        id="facebook-disconnect-help"
+        label="Get help with Disconnect"
+        accesskey="h"
+      />
+      <menuitem
+        id="facebook-disconnect-feedback"
+        label="Give feedback about Disconnect"
+        accesskey="f"
+      />
+    </menupopup>
+  </box>
 </overlay>

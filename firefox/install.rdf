@@ -2,7 +2,7 @@
 <!--
   An install manifest that stops Facebook from tracking the webpages you go to.
 
-  Copyright 2010, 2011 Disconnect, Inc.
+  Copyright 2010-2012 Disconnect, Inc.
 
   This program is free software: you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software
@@ -25,19 +25,20 @@
   xmlns:em="http://www.mozilla.org/2004/em-rdf#"
 >
   <Description about="urn:mozilla:install-manifest">
-    <em:type>2</em:type><!-- Extension -->
+    <em:type>2</em:type><!-- An extension. -->
     <em:id>facebook@disconnect.me</em:id>
     <em:name>Facebook Disconnect</em:name>
-    <em:version>1.0.1</em:version>
+    <em:version>2.0.0</em:version>
     <em:creator>Disconnect</em:creator>
     <em:developer>Brian Kennish</em:developer>
+    <em:developer>Gary Teh</em:developer>
     <em:description>
       Stop Facebook from tracking the webpages you go to.
     </em:description>
-    <em:iconURL>chrome://fbdc/skin/icon.png</em:iconURL>
-    <em:icon64URL>chrome://fbdc/skin/icon64.png</em:icon64URL>
+    <em:iconURL>chrome://facebookdisconnect/skin/icon.png</em:iconURL>
+    <em:icon64URL>chrome://facebookdisconnect/skin/icon64.png</em:icon64URL>
     <em:homepageURL>http://disconnect.me/facebook</em:homepageURL>
-    <!-- Firefox -->
+    <!-- Firefox. -->
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
@@ -45,7 +46,7 @@
         <em:maxVersion>10.*</em:maxVersion>
       </Description>
     </em:targetApplication>
-    <!-- Flock -->
+    <!-- Flock. -->
     <em:targetApplication>
       <Description>
         <em:id>{a463f10c-3994-11da-9945-000d60ca027b}</em:id>
