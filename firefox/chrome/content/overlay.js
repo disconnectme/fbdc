@@ -55,6 +55,11 @@ if (typeof FacebookDisconnect == 'undefined') {
     },
 
     /**
+     * Navigates to a URL.
+     */
+    go: function(that) { open(that.getAttribute('value'), '_blank'); },
+
+    /**
      * Registers event handlers.
      */
     initialize: function() {
@@ -105,10 +110,22 @@ if (typeof FacebookDisconnect == 'undefined') {
         }
       };
 
-      blocking.addEventListener('command', function() {
+      var command = 'command';
+
+      blocking.addEventListener(command, function() {
         content.localStorage.facebookUnblocked = !that.isUnblocked();
         content.location.reload();
       }, false);
+
+      var go = this.go;
+
+      document.
+        getElementById('facebook-disconnect-help').
+        addEventListener(command, function() { go(this); }, false);
+
+      document.
+        getElementById('facebook-disconnect-feedback').
+        addEventListener(command, function() { go(this); }, false);
     }
   };
 }

@@ -41,11 +41,13 @@
         id="facebook-disconnect-help"
         label="Get help with Disconnect"
         accesskey="h"
+        value="http://getsatisfaction.com/disconnect"
       />
       <menuitem
         id="facebook-disconnect-feedback"
         label="Give feedback about Disconnect"
         accesskey="f"
+        value="https://addons.mozilla.org/en-US/firefox/addon/fbdc/"
       />
     </menupopup>
   </box>
