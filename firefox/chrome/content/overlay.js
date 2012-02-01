@@ -79,10 +79,6 @@ if (typeof FacebookDisconnect == 'undefined') {
         render(that, icon);
       }, false);
 
-      gBrowser.addEventListener('DOMSubtreeModified', function() {
-        render(that, icon);
-      }, false);
-
       icon.onmouseover = function() { this.className = 'highlighted'; };
 
       icon.onmouseout = function() { this.removeAttribute('class'); };
@@ -133,4 +129,6 @@ if (typeof FacebookDisconnect == 'undefined') {
 /**
  * Initializes the object.
  */
-onload = function() { FacebookDisconnect.initialize(); };
+addEventListener('load', function() {
+  FacebookDisconnect.initialize();
+}, false);
