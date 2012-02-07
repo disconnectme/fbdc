@@ -70,27 +70,42 @@ FacebookDisconnect.prototype = {
    * Traps and selectively cancels a request.
    */
   shouldLoad: function(contentType, contentLocation, requestOrigin, context) {
+    
     var contentPolicy = Components.interfaces.nsIContentPolicy;
     var isMatching = this.isMatching;
     var domains = this.domains;
     var result = contentPolicy.ACCEPT;
 
+
     if (
-      contentType != contentPolicy.TYPE_DOCUMENT && // The MIME type.
-          !isMatching(requestOrigin.host, domains) && // The whitelist.
-              isMatching(contentLocation.host, domains) // The blacklist.
+		requestOrigin != null &&
+		    requestOrigin.asciiHost && 
+		        contentLocation.asciiHost &&
+                    contentType != contentPolicy.TYPE_DOCUMENT && // The MIME type.
+                        !isMatching(requestOrigin.host, domains) && // The whitelist.
+                            isMatching(contentLocation.host, domains) // The blacklist.
     ) {
       var html = context.ownerDocument;
-      var facebookRequestCount = html.facebookRequestCount;
-      html.facebookRequestCount =
-          typeof facebookRequestCount == 'undefined' ? 1 :
-              ++facebookRequestCount;
-      if (!JSON.parse(html.defaultView.content.localStorage.facebookUnblocked))
-          result = contentPolicy.REJECT_SERVER; // The blocking state.
+      if(html != null){
+        var facebookRequestCount = html.facebookRequestCount;
+        html.facebookRequestCount =
+            typeof facebookRequestCount == 'undefined' ? 1 :
+                ++facebookRequestCount;
+        if (!JSON.parse(html.defaultView.content.localStorage.facebookUnblocked))
+            result = contentPolicy.REJECT_SERVER; // The blocking state.
+	  }
+	  else{
+        var facebookRequestCount = 0;
+	  }	  
     }
 
     return result;
-  }
+  },
+  
+  /* A function of the nsIContentPolicy interface : called when an element is to be loaded from the internet */
+  shouldProcess: function (contType, contLoc, reqOrig, ctx, mimeType, extra) {
+    return Components.interfaces.nsIContentPolicy.ACCEPT;
+  }  
 }
 
 /**
