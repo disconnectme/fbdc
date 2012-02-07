@@ -70,40 +70,37 @@ FacebookDisconnect.prototype = {
    * Traps and selectively cancels a request.
    */
   shouldLoad: function(contentType, contentLocation, requestOrigin, context) {
-    
     var contentPolicy = Components.interfaces.nsIContentPolicy;
     var isMatching = this.isMatching;
     var domains = this.domains;
     var result = contentPolicy.ACCEPT;
-
-
     if (
-		requestOrigin != null &&
-		    requestOrigin.asciiHost && 
-		        contentLocation.asciiHost &&
+        requestOrigin != null && // Makes sure the object is not null.
+            requestOrigin.asciiHost && // The raw html address of this object is set.
+                contentLocation.asciiHost && // The raw html address of this object is set.
                     contentType != contentPolicy.TYPE_DOCUMENT && // The MIME type.
                         !isMatching(requestOrigin.host, domains) && // The whitelist.
                             isMatching(contentLocation.host, domains) // The blacklist.
     ) {
       var html = context.ownerDocument;
-      if(html != null){
+      if (html != null) {
         var facebookRequestCount = html.facebookRequestCount;
         html.facebookRequestCount =
             typeof facebookRequestCount == 'undefined' ? 1 :
                 ++facebookRequestCount;
         if (!JSON.parse(html.defaultView.content.localStorage.facebookUnblocked))
             result = contentPolicy.REJECT_SERVER; // The blocking state.
-	  }
-	  else{
-        var facebookRequestCount = 0;
-	  }	  
+	}
+	else { var facebookRequestCount = 0; }	  
     }
 
     return result;
   },
   
-  /* A function of the nsIContentPolicy interface : called when an element is to be loaded from the internet */
-  shouldProcess: function (contType, contLoc, reqOrig, ctx, mimeType, extra) {
+  /**
+   * Function required  by interface.
+   */
+  shouldProcess: function(contentType, contentLocation, requestOrigin, context, mimeType, extra) {
     return Components.interfaces.nsIContentPolicy.ACCEPT;
   }  
 }
