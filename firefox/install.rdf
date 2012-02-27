@@ -28,7 +28,7 @@
     <em:type>2</em:type><!-- An extension. -->
     <em:id>facebook@disconnect.me</em:id>
     <em:name>Facebook Disconnect</em:name>
-    <em:version>2.0.3</em:version>
+    <em:version>2.0.4</em:version>
     <em:creator>Disconnect</em:creator>
     <em:developer>Brian Kennish</em:developer>
     <em:developer>Gary Teh</em:developer>
