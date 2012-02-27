@@ -74,23 +74,35 @@ FacebookDisconnect.prototype = {
     var isMatching = this.isMatching;
     var domains = this.domains;
     var result = contentPolicy.ACCEPT;
-
     if (
-      contentType != contentPolicy.TYPE_DOCUMENT && // The MIME type.
-          !isMatching(requestOrigin.host, domains) && // The whitelist.
-              isMatching(contentLocation.host, domains) // The blacklist.
+        requestOrigin != null && // Makes sure the object is not null.
+            requestOrigin.asciiHost && // The raw html address of this object is set.
+                contentLocation.asciiHost && // The raw html address of this object is set.
+                    contentType != contentPolicy.TYPE_DOCUMENT && // The MIME type.
+                        !isMatching(requestOrigin.host, domains) && // The whitelist.
+                            isMatching(contentLocation.host, domains) // The blacklist.
     ) {
       var html = context.ownerDocument;
-      var facebookRequestCount = html.facebookRequestCount;
-      html.facebookRequestCount =
-          typeof facebookRequestCount == 'undefined' ? 1 :
-              ++facebookRequestCount;
-      if (!JSON.parse(html.defaultView.content.localStorage.facebookUnblocked))
-          result = contentPolicy.REJECT_SERVER; // The blocking state.
+      if (html != null) {
+        var facebookRequestCount = html.facebookRequestCount;
+        html.facebookRequestCount =
+            typeof facebookRequestCount == 'undefined' ? 1 :
+                ++facebookRequestCount;
+        if (!JSON.parse(html.defaultView.content.localStorage.facebookUnblocked))
+            result = contentPolicy.REJECT_SERVER; // The blocking state.
+	}
+	else { var facebookRequestCount = 0; }	  
     }
 
     return result;
-  }
+  },
+  
+  /**
+   * Function required  by interface.
+   */
+  shouldProcess: function(contentType, contentLocation, requestOrigin, context, mimeType, extra) {
+    return Components.interfaces.nsIContentPolicy.ACCEPT;
+  }  
 }
 
 /**
