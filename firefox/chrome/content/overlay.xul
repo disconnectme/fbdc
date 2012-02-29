@@ -39,14 +39,14 @@
       <menuseparator/>
       <menuitem
         id="facebook-disconnect-help"
-        label="Get help with Disconnect"
-        accesskey="h"
-        value="http://getsatisfaction.com/disconnect"
+        label="Ask Disconnect a question"
+        accesskey="A"
+        value="https://getsatisfaction.com/disconnect"
       />
       <menuitem
         id="facebook-disconnect-feedback"
-        label="Give feedback about Disconnect"
-        accesskey="f"
+        label="Give Disconnect props"
+        accesskey="G"
         value="https://addons.mozilla.org/en-US/firefox/addon/fbdc/"
       />
     </menupopup>
