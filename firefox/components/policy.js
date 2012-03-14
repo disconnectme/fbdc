@@ -79,14 +79,13 @@ FacebookDisconnect.prototype = {
     var isMatching = this.isMatching;
     var domains = this.domains;
     var result = accept;
-
     if (
       contentType != contentPolicy.TYPE_DOCUMENT && // The MIME type.
           requestOrigin && requestOrigin.asciiHost &&
               !isMatching(requestOrigin.host, domains) && // The whitelist.
                   contentLocation.asciiHost &&
-                      isMatching(contentLocation.host, domains)
-                          // The blacklist.
+                      isMatching(contentLocation.host, domains) && // The blacklist.
+                          !isMatching(context.ownerDocument.defaultView.content.top.location.href, domains) // Make sure Top most level is not in facebook
     ) {
       var html = context.ownerDocument;
       var facebookRequestCount = html.facebookRequestCount;
