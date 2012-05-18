@@ -21,7 +21,8 @@
 */
 
 /* The domain names Facebook phones home with, lowercased. */
-const DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net'];
+const DOMAINS = ['facebook.com', 'facebook.net', 'fbcdn.net', 'disconnect.me'];
+    // "disconnect.me" whitelisting is temporary, for FBME.
 
 /*
   Determines whether any of a bucket of domains is part of a URL, regex free.
