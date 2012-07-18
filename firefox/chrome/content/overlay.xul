@@ -41,7 +41,7 @@
         id="facebook-disconnect-help"
         label="Ask Disconnect a question"
         accesskey="A"
-        value="https://getsatisfaction.com/disconnect"
+        value="https://disconnect.me/help"
       />
       <menuitem
         id="facebook-disconnect-feedback"

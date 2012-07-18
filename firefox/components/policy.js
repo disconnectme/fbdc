@@ -98,7 +98,10 @@ FacebookDisconnect.prototype = {
         html.facebookRequestCount =
             typeof facebookRequestCount == 'undefined' ? 1 :
                 ++facebookRequestCount;
-        if (!JSON.parse(content.localStorage.facebookUnblocked))
+        var facebookUnblocked = content.localStorage.facebookUnblocked;
+        if (typeof facebookUnblocked == 'undefined')
+            facebookUnblocked = content.localStorage.facebookUnblocked = false;
+        if (!JSON.parse(facebookUnblocked))
             result = contentPolicy.REJECT_SERVER; // The blocking state.
       }
     }
