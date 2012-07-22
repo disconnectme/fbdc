@@ -28,16 +28,17 @@
     <em:type>2</em:type><!-- An extension. -->
     <em:id>facebook@disconnect.me</em:id>
     <em:name>Facebook Disconnect</em:name>
-    <em:version>2.1.2</em:version>
+    <em:version>2.1.3</em:version>
     <em:creator>Disconnect</em:creator>
     <em:developer>Brian Kennish</em:developer>
     <em:developer>Gary Teh</em:developer>
+    <em:developer>Dan Kwon</em:developer>
     <em:description>
       Stop Facebook from tracking the webpages you go to.
     </em:description>
     <em:iconURL>chrome://facebook-disconnect/skin/icon.png</em:iconURL>
     <em:icon64URL>chrome://facebook-disconnect/skin/icon64.png</em:icon64URL>
-    <em:homepageURL>http://disconnect.me/facebook</em:homepageURL>
+    <em:homepageURL>https://disconnect.me/facebook</em:homepageURL>
     <!-- Firefox. -->
     <em:targetApplication>
       <Description>
